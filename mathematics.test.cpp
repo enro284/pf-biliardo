@@ -5,7 +5,7 @@
 TEST_CASE("testint pol")
 {
   std::vector<double> coeff0{0.};
-  SUBCASE("calling pol with no parameters (null) in x")
+  SUBCASE("calling pol with 1 parameter (null) in x")
   {
     Pol pol{coeff0};
     CHECK(pol(0.) == doctest::Approx(0.));
@@ -13,7 +13,7 @@ TEST_CASE("testint pol")
   }
 
   std::vector<double> coeff{2.1};
-  SUBCASE("calling pol with 1 parameters (null) in x")
+  SUBCASE("calling pol with 1 parameter in x")
   {
     Pol pol{coeff};
     CHECK(pol(0.) == doctest::Approx(2.1));
@@ -37,5 +37,55 @@ TEST_CASE("testint pol")
     CHECK(pol(0.) == doctest::Approx(2.1));
     CHECK(pol(1.) == doctest::Approx(6.2));
     CHECK(pol(2.1) == doctest::Approx(18.564));
+  }
+}
+
+TEST_CASE("testing eq_solve")
+{
+  std::vector<double> coeff_bar{
+      3., -1.}; // first coeff is ==r1, second coeff is slope of barrier
+
+  Pol bar{coeff_bar};
+
+  SUBCASE("calling eq_solve with: linear barrier, flat trajectory")
+  {
+    std::vector<double> coeff_tra{0.};
+    Pol tra{coeff_tra};
+    CHECK(eq_solve(tra, bar) == doctest::Approx(3.));
+  }
+
+  SUBCASE("calling eq_solve with: linear barrier, defined trajectory")
+  {
+    std::vector<double> coeff_tra{1., 2.3};
+    Pol tra{coeff_tra};
+    CHECK(eq_solve(tra, bar) == doctest::Approx(0.606));
+  }
+
+SUBCASE("calling eq_solve with: linear barrier, defined trajectory which eq_solves negatively")
+  {
+    std::vector<double> coeff_tra{1., -2.3};
+    Pol tra{coeff_tra};
+    CHECK(eq_solve(tra, bar) == doctest::Approx(-1.538));
+  }
+
+  SUBCASE("calling eq_solve with: linear barrier, defined trajectory which eq_solves out of bounds")
+  {
+    std::vector<double> coeff_tra{0., -0.2};
+    Pol tra{coeff_tra};
+    CHECK(eq_solve(tra, bar) == doctest::Approx(3.75));
+  }
+
+  SUBCASE("calling eq_solve with: linear barrier, parallel trajectory")
+  {
+    std::vector<double> coeff_tra{2.99, -1.};
+    Pol tra{coeff_tra};
+    CHECK_THROWS(eq_solve(tra, bar));
+  }
+
+  SUBCASE("calling eq_solve with: linear barrier, equal trajectory")
+  {
+    std::vector<double> coeff_tra{3., -1.};
+    Pol tra{coeff_tra};
+    CHECK_THROWS(eq_solve(tra, bar));
   }
 }
