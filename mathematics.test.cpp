@@ -58,17 +58,19 @@ TEST_CASE("testing eq_solve")
   {
     std::vector<double> coeff_tra{1., 2.3};
     Pol tra{coeff_tra};
-    CHECK(eq_solve(tra, bar) == doctest::Approx(0.606));
+    CHECK(eq_solve(tra, bar) == doctest::Approx(0.606060));
   }
 
-SUBCASE("calling eq_solve with: linear barrier, defined trajectory which eq_solves negatively")
+  SUBCASE("calling eq_solve with: linear barrier, defined trajectory which "
+          "eq_solves negatively")
   {
     std::vector<double> coeff_tra{1., -2.3};
     Pol tra{coeff_tra};
-    CHECK(eq_solve(tra, bar) == doctest::Approx(-1.538));
+    CHECK(eq_solve(tra, bar) == doctest::Approx(-1.53846154));
   }
 
-  SUBCASE("calling eq_solve with: linear barrier, defined trajectory which eq_solves out of bounds")
+  SUBCASE("calling eq_solve with: linear barrier, defined trajectory which "
+          "eq_solves out of bounds")
   {
     std::vector<double> coeff_tra{0., -0.2};
     Pol tra{coeff_tra};
@@ -79,13 +81,13 @@ SUBCASE("calling eq_solve with: linear barrier, defined trajectory which eq_solv
   {
     std::vector<double> coeff_tra{2.99, -1.};
     Pol tra{coeff_tra};
-    CHECK_THROWS(eq_solve(tra, bar));
+    CHECK(std::isinf(eq_solve(tra, bar)));
   }
 
   SUBCASE("calling eq_solve with: linear barrier, equal trajectory")
   {
     std::vector<double> coeff_tra{3., -1.};
     Pol tra{coeff_tra};
-    CHECK_THROWS(eq_solve(tra, bar));
+    CHECK(std::isnan(eq_solve(tra, bar)));
   }
 }
