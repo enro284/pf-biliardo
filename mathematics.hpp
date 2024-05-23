@@ -1,12 +1,6 @@
 #include <vector>
 
-class Function
-{
- public:
-  virtual double operator()(double x) = 0;
-};
-
-class Pol : Function
+class Pol
 {
   std::vector<double> coeff_;
 
@@ -17,6 +11,8 @@ class Pol : Function
 
   int deg() const;
   std::vector<double> coeff() const;
+
+  Pol operator-();
 };
 
 double eq_solve(Pol const& pol1, Pol const& pol2);
