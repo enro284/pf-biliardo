@@ -91,3 +91,15 @@ TEST_CASE("testing eq_solve")
     CHECK(std::isnan(eq_solve(tra, bar)));
   }
 }
+
+TEST_CASE("testing Pol::operator-")
+{
+  std::vector<double> coeff{2.99, -1.};
+
+  Pol pol{coeff};
+
+  Pol inverse_pol{-pol};
+
+  CHECK(inverse_pol.coeff()[0] == -2.99);
+  CHECK(inverse_pol.coeff()[1] == 1.);
+}

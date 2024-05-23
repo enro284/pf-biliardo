@@ -27,6 +27,14 @@ std::vector<double> Pol::coeff() const
   return coeff_;
 }
 
+Pol Pol::operator-()
+{
+  Pol res{*this};
+  std::transform(res.coeff_.begin(), res.coeff_.end(), res.coeff_.begin(),
+                 [](double c) { return -c; });
+  return res;
+}
+
 double eq_solve(Pol const& pol1, Pol const& pol2)
 {
   std::vector<double> eq;
