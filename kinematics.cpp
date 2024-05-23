@@ -1,5 +1,6 @@
 #include "kinematics.hpp"
 #include <cmath>
+#include <cassert>
 
 bool Point::operator==(Point const& rhs) const
 {
@@ -85,10 +86,12 @@ Result simulate_single_particle(Barrier const& barrier_up,
                                 Barrier const& barrier_down, Point p0,
                                 double m0)
 {
-  Trajectory t{0., p0.y_, m0, false};
+  Trajectory t{{0., p0.y_}, m0, false};
   double l  = barrier_up.max();
   double r1 = barrier_up.pol()(0.);
   double r2 = barrier_up.pol()(l);
+
+  assert(std::abs(p0.y_) < r1);
 
   {                                               ///// DA TESTARE!!!!!!!!!!!!
     double up_x{intersect(t, barrier_up).x_};     // up intersection x
@@ -101,7 +104,7 @@ Result simulate_single_particle(Barrier const& barrier_up,
   }
   Point inter;
 
-  while (true) {
+  for (int i{0}; i < 100; ++i) {
     if (t.up_) {
       t.up_ = false;
       inter = intersect(t, barrier_up);
@@ -130,4 +133,5 @@ Result simulate_single_particle(Barrier const& barrier_up,
       }
     }
   }
+  return t.result();
 }
