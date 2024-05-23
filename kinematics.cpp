@@ -19,16 +19,6 @@ Result::Result()
     : p_{-1., 0.}
 {}
 
-std::string Result::string() const
-{
-  std::string string{"y: "};
-  string += std::to_string(p_.y_);
-  string += " theta: ";
-  string += std::to_string(theta_);
-  string += '\n';
-  return string;
-}
-
 Result Trajectory::result() const
 {
   return Result(p_, std::atan(m_));
@@ -95,12 +85,10 @@ Result simulate_single_particle(Barrier const& barrier_up,
                                 Barrier const& barrier_down, Point p0,
                                 double m0)
 {
-  Trajectory t{0., p0.y_, m0};
+  Trajectory t{0., p0.y_, m0, false};
   double l  = barrier_up.max();
   double r1 = barrier_up.pol()(0.);
   double r2 = barrier_up.pol()(l);
-
-  t.up_ = false;
 
   {                                               ///// DA TESTARE!!!!!!!!!!!!
     double up_x{intersect(t, barrier_up).x_};     // up intersection x

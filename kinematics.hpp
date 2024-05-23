@@ -44,8 +44,8 @@ struct Trajectory
 
 class Barrier
 {
+  Point max_;
   Pol pol_;
-  Point max_{};
 
  public:
   Barrier(Pol p, double x_max);
