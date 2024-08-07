@@ -5,8 +5,8 @@ struct Statistics
 {
   double mean{};
   double std_dev{};
-  double skewness{}; // adj fisher-pearson
-  double kurtosis{}; // sample excess kurtosis
+  double skewness{};
+  double kurtosis{}; // implementes as excess kurtosis!
 };
 
 class Sample
@@ -19,11 +19,10 @@ class Sample
 
  public:
   Sample();
-
+  
   void add(double x);
   int size();
 
   Statistics statistics() const;
 };
-
 #endif
