@@ -6,7 +6,7 @@ struct Statistics
   double mean{};
   double std_dev{};
   double skewness{};
-  double kurtosis{}; // implementes as excess kurtosis!
+  double kurtosis{}; // implemented as excess kurtosis!
 };
 
 class Sample

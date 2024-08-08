@@ -36,18 +36,20 @@ Statistics Sample::statistics() const
   double m3 = s3 / n - 3 * m1 * s2 / n + 2 * std::pow(m1, 3);
   double m4 =
       s4 / n - 4 * m1 * s3 / n + 6 * m1 * m1 * s2 / n - 3 * std::pow(m1, 4);
+  
+  double N = static_cast<double>(n);
 
   double mean    = m1;
 
   double std_dev = std::sqrt(m2 * n / (n - 1));
 
   // http://brownmath.com/stat/shape.htm#SkewnessCompute
-  double skew = std::sqrt(static_cast<double>(n) * static_cast<double>(n - 1))
-              / static_cast<double>(n - 2) * m3 / std::pow(m2, 1.5);
+  double skew = std::sqrt(N * (N-1) )
+              / (N - 2) * m3 / std::pow(m2, 1.5);
 
-  double kurt = static_cast<double>(n - 1)
-              / (static_cast<double>(n - 2) * static_cast<double>(n - 3))
-              * (static_cast<double>(n + 1) * (m4 / (m2 * m2) - 3.) + 6.);
+  double kurt = (N - 1)
+              / ((N - 2) * (N - 3))
+              * ((N + 1) * (m4 / (m2 * m2) - 3.) + 6.);
 
   return {mean, std_dev, skew, kurt};
 }
