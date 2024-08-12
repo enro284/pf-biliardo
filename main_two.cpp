@@ -44,12 +44,12 @@ int main()
   const auto result_theta = statistics_theta.statistics();
 
   std::cout << "The exit y values have a mean of " << result_y.mean
-            << " , a standard deviation of " << result_y.std_dev
+            << ", a standard deviation of " << result_y.std_dev
             << ", a skewnes coefficient of " << result_y.skewness
             << " and a kurtosis of " << result_y.kurtosis << '\n';
 
   std::cout << "The exit angle values have a mean of " << result_theta.mean
-            << " , a standard deviation of " << result_theta.std_dev
+            << ", a standard deviation of " << result_theta.std_dev
             << ", a skewnes coefficient of " << result_theta.skewness
             << " and a kurtosis of " << result_theta.kurtosis << '\n';
 }
