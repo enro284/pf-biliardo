@@ -1,8 +1,11 @@
+#ifndef MATHEMATICS_HPP
+#define MATHEMATICS_HPP
+
 #include <vector>
 
 class Pol
 {
-  std::vector<double> coeff_;
+  std::vector<double> coeff_; // [0] + [1]*x + [2]*x^2 ...
 
  public:
   Pol(std::vector<double> coeff);
@@ -16,3 +19,5 @@ class Pol
 };
 
 double eq_solve(Pol const& pol1, Pol const& pol2);
+
+#endif

@@ -3,7 +3,7 @@
 #include <random>
 int main()
 {
-  int N{100};
+  int N{100000};
 
   double l{4};
   double r1{1.5};
@@ -18,7 +18,8 @@ int main()
   Barrier barrier_up{pol, l};
   Barrier barrier_down{-pol, l};
 
-  std::default_random_engine eng;
+  std::random_device r;
+  std::default_random_engine eng{r()};
   std::normal_distribution y_dist{u_y, sigma_y};
   std::normal_distribution theta_dist{u_theta, sigma_theta};
 

@@ -1,3 +1,6 @@
+#ifndef KINEMATICS_HPP
+#define KINEMATICS_HPP
+
 #include "mathematics.hpp"
 #include <iostream>
 
@@ -59,3 +62,5 @@ Point intersect(Trajectory t, Barrier b);
 Result simulate_single_particle(Barrier const& barrier_up,
                                 Barrier const& barrier_down, Point p0,
                                 double m0);
+
+#endif
