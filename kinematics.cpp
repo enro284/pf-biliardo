@@ -1,6 +1,6 @@
 #include "kinematics.hpp"
-#include <cmath>
 #include <cassert>
+#include <cmath>
 
 bool Point::operator==(Point const& rhs) const
 {
@@ -93,7 +93,7 @@ Result simulate_single_particle(Barrier const& barrier_up,
 
   assert(std::abs(p0.y_) < r1);
 
-  {                                               ///// DA TESTARE!!!!!!!!!!!!
+  {
     double up_x{intersect(t, barrier_up).x_};     // up intersection x
     double down_x{intersect(t, barrier_down).x_}; // down intersection x
 
