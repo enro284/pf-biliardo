@@ -59,5 +59,5 @@ double eq_solve(Pol const& pol1, Pol const& pol2)
   default:
     throw std::runtime_error("equation degree too high, I cannot solve it");
     break;
-  }
+  } //used switch to make the implementation of higher degree polinomials easier
 }

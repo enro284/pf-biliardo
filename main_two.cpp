@@ -34,14 +34,20 @@ int main()
     double m0{std::tan(theta_dist(eng))};
     Result res =
         simulate_single_particle(barrier_up, barrier_down, Point{0, y0}, m0);
-    double yf     = res.get_y();
-    double thetaf = res.get_theta();
-    statistics_y.add(yf);
-    statistics_theta.add(thetaf);
+    if (res.get_x() != -1) {
+      double yf     = res.get_y();
+      double thetaf = res.get_theta();
+      statistics_y.add(yf);
+      statistics_theta.add(thetaf);
+    }
   }
 
   const auto result_y     = statistics_y.statistics();
   const auto result_theta = statistics_theta.statistics();
+
+  std::cout << "The number of generated particles is " << N
+            << ", the numberr of particles exiting from the right side is "
+            << statistics_theta.size() << '\n'; //statistics_theta.size() is equal to statistics_y.size()
 
   std::cout << "The exit y values have a mean of " << result_y.mean
             << ", a standard deviation of " << result_y.std_dev
