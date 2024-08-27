@@ -43,7 +43,7 @@ TEST_CASE("testint pol")
 TEST_CASE("testing eq_solve")
 {
   std::vector<double> coeff_bar{
-      3., -1.}; // first coeff is ==r1, second coeff is slope of barrier
+      3., -1.}; 
 
   Pol bar{coeff_bar};
 

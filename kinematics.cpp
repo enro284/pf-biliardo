@@ -56,8 +56,12 @@ bool Result::is_valid() const
 
 std::ostream& operator<<(std::ostream& os, Result const& res)
 {
+  if (res.get_x() == -1) {
+    std::cout << "Ball goes backwards and exits system from origin";
+    return os;
+  } else {
   os << res.get_x() << ", " << res.get_y() << ", " << res.get_theta();
-  return os;
+  return os; }
 }
 
 Barrier::Barrier(Pol pol, double x_max)
@@ -94,8 +98,8 @@ Result simulate_single_particle(Barrier const& barrier_up,
   assert(std::abs(p0.y_) < r1);
 
   {
-    double up_x{intersect(t, barrier_up).x_};     // up intersection x
-    double down_x{intersect(t, barrier_down).x_}; // down intersection x
+    double up_x{intersect(t, barrier_up).x_};     
+    double down_x{intersect(t, barrier_down).x_}; 
 
     if (up_x > 0 && down_x > 0)
       t.up_ = (up_x < down_x);

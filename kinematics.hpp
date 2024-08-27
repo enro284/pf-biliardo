@@ -38,7 +38,7 @@ std::ostream& operator<<(std::ostream& os, Result const& res);
 struct Trajectory
 {
   Point p_;
-  double m_; // trajectory slope
+  double m_; 
   bool up_;
 
   void exit(double x);

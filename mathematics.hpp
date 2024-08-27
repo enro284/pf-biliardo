@@ -5,12 +5,12 @@
 
 class Pol
 {
-  std::vector<double> coeff_; // [0] + [1]*x + [2]*x^2 ...
+  std::vector<double> coeff_; 
 
  public:
   Pol(std::vector<double> coeff);
   double operator()(double x);
-  double der(double x);
+  //double der(double x); //Operator to calculate derivative, needs to be implemented for higher degree barriers
 
   int deg() const;
   std::vector<double> coeff() const;
