@@ -16,10 +16,11 @@ double Pol::operator()(double x)
                            ++i;
                            return acc += coeff * std::pow(x, i);
                          });
-};
+}
+
 int Pol::deg() const
 {
-  return coeff_.size() - 1;
+  return static_cast<int>(coeff_.size()) - 1;
 }
 
 std::vector<double> Pol::coeff() const
