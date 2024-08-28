@@ -24,6 +24,7 @@ string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined -fno-o
 
 add_executable(single_particle_sim main_one.cpp mathematics.cpp kinematics.cpp)
 add_executable(multiple_particle_sim main_two.cpp mathematics.cpp kinematics.cpp statistics.cpp)
+add_executable(multiple_particle_sim_csv main_two_csv.cpp mathematics.cpp kinematics.cpp statistics.cpp)
 
 # se il testing e' abilitato...
 #   per disabilitare il testing, passare -DBUILD_TESTING=OFF a cmake durante la fase di configurazione

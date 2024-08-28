@@ -4,6 +4,9 @@ build
 #vscode
 .vscode
 
+# csv output
+.csv
+
 # Prerequisites
 *.d
 
