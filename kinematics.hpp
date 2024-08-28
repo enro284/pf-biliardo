@@ -38,7 +38,7 @@ std::ostream& operator<<(std::ostream& os, Result const& res);
 struct Trajectory
 {
   Point p_;
-  double m_; 
+  double m_;
   bool up_;
 
   void exit(double x);
@@ -50,9 +50,10 @@ class Barrier
   Point max_;
   Pol pol_;
 
- public:
+ public: //const!!!
   Barrier(Pol p, double x_max);
-
+  Barrier(double l, double r1, double r2);
+  
   double max() const;
   Pol pol() const;
 };
