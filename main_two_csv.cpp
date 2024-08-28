@@ -61,5 +61,6 @@ int main()
     }
   }
   csv_file.close();
-  std::cout << "output written to \"" << filename << "\"\n";
+  std::cout << "Output written to \"" << filename << "\"\n";
+  std::cout << "Columns are: yf, thetaf\n";
 }
