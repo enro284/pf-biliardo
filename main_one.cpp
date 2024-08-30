@@ -18,12 +18,13 @@ void set_from_user_input(T& var, std::string var_name)
 int main()
 {
   double r1{1.5};
+  std::cout << "r1 cannot be modified and is set as: " << r1 << '\n';
   double l{0.};
   set_from_user_input(l, "length of barrier");
   double r2{0.};
   set_from_user_input(r2, "height at end of barrier");
 
-  std::cout << "barriers: r1 = " << r1 << '\n';
+
 
   Barrier barrier_up{l, r1, r2};
   Barrier barrier_down{l, -r1, -r2};

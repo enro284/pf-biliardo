@@ -16,8 +16,8 @@ void set_from_user_input(T& var, std::string var_name)
 
 int main()
 {
-  std::cout << "Simulation of N particles. r1 is set as follows:\n";
   double r1{1.5};
+  std::cout << "Simulation of N particles. r1 cannot be modified and is set as: "  << r1 << '\n';
   std::cout << "barriers: r1 = " << r1 << '\n';
   double l{0.};
   set_from_user_input(l, "length of barrier");
