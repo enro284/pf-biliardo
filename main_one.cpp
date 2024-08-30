@@ -17,7 +17,7 @@ void set_from_user_input(T& var, std::string var_name)
 
 int main()
 {
-  double r1{1.5};
+  double r1{1.};
   std::cout << "r1 cannot be modified and is set as: " << r1 << '\n';
   double l{0.};
   set_from_user_input(l, "length of barrier");
