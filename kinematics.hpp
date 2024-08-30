@@ -12,6 +12,12 @@ struct Point
   bool operator==(Point const& rhs) const;
 };
 
+/*
+convention for results:
+x=-1: particle left from the left
+x= l: particle left from the right
+0<=x<l: particle still bouncing, maybe resume simulation
+*/
 class Result
 {
   Point p_;
@@ -39,7 +45,6 @@ struct Trajectory
 {
   Point p_;
   double m_;
-  bool up_;
 
   void exit(double x);
   Result result() const;
@@ -50,10 +55,10 @@ class Barrier
   Point max_;
   Pol pol_;
 
- public: //const!!!
+ public: // const!!!
   Barrier(Pol p, double x_max);
   Barrier(double l, double r1, double r2);
-  
+
   double max() const;
   Pol pol() const;
 };

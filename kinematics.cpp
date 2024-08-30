@@ -96,52 +96,64 @@ Result simulate_single_particle(Barrier const& barrier_up,
                                 Barrier const& barrier_down, Point p0,
                                 double m0)
 {
-  Trajectory t{{0., p0.y_}, m0, false};
+  Trajectory t{{0., p0.y_}, m0};
   double l  = barrier_up.max();
   double r1 = barrier_up.pol()(0.);
   double r2 = barrier_up.pol()(l);
 
   assert(std::abs(p0.y_) < r1);
 
+  Point intersection;
   {
+    bool up;
     double up_x{intersect(t, barrier_up).x_};
     double down_x{intersect(t, barrier_down).x_};
 
     if (up_x > 0 && down_x > 0)
-      t.up_ = (up_x < down_x);
+      up = (up_x < down_x);
     else if (up_x > 0. && down_x < 0.)
-      t.up_ = true;
-  }
-  Point inter;
+      up = true;
+    else
+      up = false;
 
-  for (int i{0}; i < 100; ++i) {
-    if (t.up_) {
-      t.up_ = false;
-      inter = intersect(t, barrier_up);
+    if (!up) {
+      intersection = intersect(t, barrier_down);
 
-      if (inter.x_ < l && inter.x_ > 0) {
-        t.p_ = inter;
-        t.m_ = std::tan((2. * std::atan(-l / (r2 - r1))) - std::atan(t.m_));
-      } else if (inter.x_ < 0) {
-        return Result();
-      } else if (inter.x_ > l) {
-        t.exit(l);
-        return t.result();
-      }
-    } else {
-      t.up_ = true;
-      inter = intersect(t, barrier_down);
-
-      if (inter.x_ < l && inter.x_ > 0) {
-        t.p_ = inter;
+      if (intersection.x_ < l && intersection.x_ > 0) {
+        t.p_ = intersection;
         t.m_ = std::tan(2. * std::atan(l / (r2 - r1)) - std::atan(t.m_));
-      } else if (inter.x_ < 0) {
+      } else if (intersection.x_ < 0) {
         return Result();
-      } else if (inter.x_ > l) {
+      } else if (intersection.x_ > l) {
         t.exit(l);
         return t.result();
       }
     }
   }
+
+  for (int i{0}; i < 50; ++i) {
+    intersection = intersect(t, barrier_up);
+    if (intersection.x_ < l && intersection.x_ > 0) {
+      t.p_ = intersection;
+      t.m_ = std::tan((2. * std::atan(-l / (r2 - r1))) - std::atan(t.m_));
+    } else if (intersection.x_ < 0) {
+      return Result();
+    } else if (intersection.x_ > l) {
+      t.exit(l);
+      return t.result();
+    }
+
+    intersection = intersect(t, barrier_down);
+    if (intersection.x_ < l && intersection.x_ > 0) {
+      t.p_ = intersection;
+      t.m_ = std::tan(2. * std::atan(l / (r2 - r1)) - std::atan(t.m_));
+    } else if (intersection.x_ < 0) {
+      return Result();
+    } else if (intersection.x_ > l) {
+      t.exit(l);
+      return t.result();
+    }
+  }
+
   return t.result();
 }
