@@ -6,8 +6,11 @@
 #include <vector>
 
 Pol::Pol(std::vector<double> coeff)
-    : coeff_(coeff)
-{}
+{
+  if (coeff.size() == 0)
+    throw(std::runtime_error("coeff vector size = 0"));
+  coeff_ = coeff;
+}
 double Pol::operator()(double x)
 {
   int i{-1};
@@ -21,6 +24,16 @@ double Pol::operator()(double x)
 int Pol::deg() const
 {
   return static_cast<int>(coeff_.size()) - 1;
+}
+
+double Pol::der(double x)
+{
+  int i{0};
+  return std::accumulate(coeff_.begin() + 1, coeff_.end(), 0.,
+                         [x, &i](double acc, double coeff) {
+                           ++i;
+                           return acc += i * coeff * std::pow(x, i - 1);
+                         });
 }
 
 std::vector<double> Pol::coeff() const
@@ -59,5 +72,6 @@ double eq_solve(Pol const& pol1, Pol const& pol2)
   default:
     throw std::runtime_error("equation degree too high, I cannot solve it");
     break;
-  } //used switch to make the implementation of higher degree polinomials easier
+  } // used switch to make the implementation of higher degree polinomials
+    // easier
 }

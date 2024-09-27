@@ -4,64 +4,95 @@
 
 TEST_CASE("testint pol")
 {
-  std::vector<double> coeff0{0.};
-  SUBCASE("calling pol with 1 parameter (null) in x")
+  SUBCASE("empty polynomial")
   {
-    Pol pol{coeff0};
+    CHECK_THROWS(Pol(std::vector<double>()));
+  }
+
+  SUBCASE("0 degree polynomial")
+  {
+    std::vector<double> coeff{0.};
+    Pol pol{coeff};
     CHECK(pol(0.) == doctest::Approx(0.));
     CHECK(pol(1.) == doctest::Approx(0.));
+
+    CHECK(pol.der(0.) == 0.);
+    CHECK(pol.der(1.) == 0.);
   }
 
   std::vector<double> coeff{2.1};
-  SUBCASE("calling pol with 1 parameter in x")
+  SUBCASE("1st degree polynomial")
   {
     Pol pol{coeff};
     CHECK(pol(0.) == doctest::Approx(2.1));
     CHECK(pol(1.) == doctest::Approx(2.1));
     CHECK(pol(2.1) == doctest::Approx(2.1));
+
+    CHECK(pol.der(0.) == 0.);
+    CHECK(pol.der(1.) == 0.);
   }
 
   coeff.push_back(1.5);
-  SUBCASE("calling pol with 2 parameters (linear) in x")
+  SUBCASE("2nd degree polynomial")
   {
     Pol pol{coeff};
     CHECK(pol(0.) == doctest::Approx(2.1));
     CHECK(pol(1.) == doctest::Approx(3.6));
     CHECK(pol(2.1) == doctest::Approx(5.25));
+
+    CHECK(pol.der(0.) == 1.5);
+    CHECK(pol.der(1.) == 1.5);
+    CHECK(pol.der(2.1) == 1.5);
   }
 
-  std::vector<double> coeff3{2.1, 0.7, 3.4};
-  SUBCASE("calling pol with 3 parameters (quadratic) in x")
+  coeff.push_back(3.4);
+  SUBCASE("3rd degree polynomial")
   {
-    Pol pol{coeff3};
+    Pol pol{coeff};
     CHECK(pol(0.) == doctest::Approx(2.1));
-    CHECK(pol(1.) == doctest::Approx(6.2));
-    CHECK(pol(2.1) == doctest::Approx(18.564));
+    CHECK(pol(1.) == doctest::Approx(7.));
+    CHECK(pol(2.1) == doctest::Approx(20.244));
+
+    CHECK(pol.der(0.) == doctest::Approx(1.5));
+    CHECK(pol.der(1.) == doctest::Approx(8.3));
+    CHECK(pol.der(2.1) == doctest::Approx(15.78));
+  }
+
+  coeff.push_back(5.7);
+  SUBCASE("4th degree polynomial")
+  {
+    Pol pol{coeff};
+    CHECK(pol(0.) == doctest::Approx(2.1));
+    CHECK(pol(1.) == doctest::Approx(12.7));
+    CHECK(pol(1.8) == doctest::Approx(49.0584));
+
+    CHECK(pol.der(0.) == doctest::Approx(1.5));
+    CHECK(pol.der(1.) == doctest::Approx(25.4));
+    CHECK(pol.der(1.8) == doctest::Approx(69.144));
   }
 }
 
 TEST_CASE("testing eq_solve")
 {
-  std::vector<double> coeff_bar{
-      3., -1.}; 
+  std::vector<double> coeff_bar{3., -1.};
 
   Pol bar{coeff_bar};
 
-  SUBCASE("calling eq_solve with: linear barrier, flat trajectory")
+  SUBCASE("eq_solve with: linear barrier, flat trajectory")
   {
     std::vector<double> coeff_tra{0.};
     Pol tra{coeff_tra};
     CHECK(eq_solve(tra, bar) == doctest::Approx(3.));
   }
 
-  SUBCASE("calling eq_solve with: linear barrier, defined trajectory")
+  SUBCASE("eq_solve with: linear barrier, defined trajectory")
   {
     std::vector<double> coeff_tra{1., 2.3};
     Pol tra{coeff_tra};
     CHECK(eq_solve(tra, bar) == doctest::Approx(0.606060));
   }
 
-  SUBCASE("calling eq_solve with: linear barrier, defined trajectory which "
+  SUBCASE(" eq_solve with: linear barrier, defined trajectory which "
           "eq_solves negatively")
   {
     std::vector<double> coeff_tra{1., -2.3};
@@ -69,7 +100,7 @@ TEST_CASE("testing eq_solve")
     CHECK(eq_solve(tra, bar) == doctest::Approx(-1.53846154));
   }
 
-  SUBCASE("calling eq_solve with: linear barrier, defined trajectory which "
+  SUBCASE(" eq_solve with: linear barrier, defined trajectory which "
           "eq_solves out of bounds")
   {
     std::vector<double> coeff_tra{0., -0.2};
@@ -77,14 +108,14 @@ TEST_CASE("testing eq_solve")
     CHECK(eq_solve(tra, bar) == doctest::Approx(3.75));
   }
 
-  SUBCASE("calling eq_solve with: linear barrier, parallel trajectory")
+  SUBCASE(" eq_solve with: linear barrier, parallel trajectory")
   {
     std::vector<double> coeff_tra{2.99, -1.};
     Pol tra{coeff_tra};
     CHECK(std::isinf(eq_solve(tra, bar)));
   }
 
-  SUBCASE("calling eq_solve with: linear barrier, equal trajectory")
+  SUBCASE(" eq_solve with: linear barrier, equal trajectory")
   {
     std::vector<double> coeff_tra{3., -1.};
     Pol tra{coeff_tra};
