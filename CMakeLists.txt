@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(pf-biliardo VERSION 0.1.0)
+project(pf-biliardo VERSION 0.2.0)
 
 # abilita il supporto per i test, tra cui l'opzione BUILD_TESTING usata sotto
 include(CTest)
@@ -22,7 +22,10 @@ string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Wconversion -Wsign-con
 string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address,undefined -fno-omit-frame-pointer -D_LIBCPP_DEBUG -D_GLIBCXX_ASSERTIONS")
 string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined -fno-omit-frame-pointer -D_LIBCPP_DEBUG -D_GLIBCXX_ASSERTIONS")
 
-add_executable(single_particle_sim main_one.cpp mathematics.cpp kinematics.cpp)
+find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
+
+add_executable(single_particle_sim main_one.cpp mathematics.cpp kinematics.cpp graphics.cpp)
+target_link_libraries(single_particle_sim PRIVATE sfml-graphics)
 add_executable(multiple_particle_sim main_two.cpp mathematics.cpp kinematics.cpp statistics.cpp)
 add_executable(multiple_particle_sim_csv main_two_csv.cpp mathematics.cpp kinematics.cpp statistics.cpp)
 

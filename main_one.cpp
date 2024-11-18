@@ -1,3 +1,4 @@
+#include "graphics.hpp"
 #include "kinematics.hpp"
 #include <cassert>
 #include <cmath>
@@ -5,7 +6,7 @@
 #include <limits>
 
 template<typename T>
-void set_from_user_input(T& var, std::string var_name)
+void set_from_user_input(T& var, const std::string& var_name)
 {
   std::cout << "Enter " << var_name << ": ";
   std::cin >> var;
@@ -17,39 +18,35 @@ void set_from_user_input(T& var, std::string var_name)
 
 int main()
 {
-  double r1{1.};
-  std::cout << "r1 cannot be modified and is set as: " << r1 << '\n';
-  double l{0.};
-  set_from_user_input(l, "length of barrier");
+  double r1{0.};
+  set_from_user_input(r1, "height at beginning of the barrier (r1)");
   double r2{0.};
-  set_from_user_input(r2, "height at end of barrier");
+  set_from_user_input(r2, "height at end of the barrier (r2)");
+  double l{0.};
+  set_from_user_input(l, "length of the barrier (l)");
 
+  double y0{0.};
+  set_from_user_input(y0, "initial height (y0)");
+  if (std::abs(y0) >= r1) {
+    throw(std::runtime_error("y0 >= r1, cannot simulate trajectory"));
+  }
 
+  double theta0{0};
+  set_from_user_input(theta0, "initial angle (theta0) [rad]");
+  double m0{std::tan(theta0)};
 
   Barrier barrier_up{l, r1, r2};
   Barrier barrier_down{l, -r1, -r2};
 
-  while (true) {
-    double y0{0};
-    set_from_user_input(y0, "y0");
-    if (std::abs(y0) > r1) {
-      throw(std::runtime_error("y0 > r1, cannot simulate trajectory"));
-    }
+  std::vector<Point> bounces;
+  Result res = simulate_single_particle(barrier_up, barrier_down, Point{0, y0},
+                                        m0, bounces);
 
-    double theta0{0};
-    set_from_user_input(theta0, "theta0");
-    double m0{std::tan(theta0)};
+  std::cout << "Simulation result (x, y, theta[rad]): " << res << '\n';
 
-    Result res =
-        simulate_single_particle(barrier_up, barrier_down, Point{0, y0}, m0);
+  Plot plot(barrier_up, barrier_down);
+  plot.add(bounces);
+  plot.show();
 
-    std::cout << "result (x, y, theta[rad]): " << res << '\n';
-
-    std::cout << "Type 'q' to quit or any other key to continue: ";
-    std::string input;
-    std::cin >> input;
-    if (input == "q")
-      return EXIT_SUCCESS;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-  }
+  return EXIT_SUCCESS;
 }

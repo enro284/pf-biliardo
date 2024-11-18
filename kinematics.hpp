@@ -3,6 +3,7 @@
 
 #include "mathematics.hpp"
 #include <iostream>
+#include <vector>
 
 struct Point
 {
@@ -68,5 +69,9 @@ Point intersect(Trajectory t, Barrier b);
 Result simulate_single_particle(Barrier const& barrier_up,
                                 Barrier const& barrier_down, Point p0,
                                 double m0);
+
+Result simulate_single_particle(Barrier const& barrier_up,
+                                Barrier const& barrier_down, Point p0,
+                                double m0, std::vector<Point> &points);
 
 #endif
