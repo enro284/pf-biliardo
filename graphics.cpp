@@ -8,7 +8,7 @@ sf::Vector2f Plot::to_pixel(FP1 x, FP2 y)
                        static_cast<float>(-y) * y_scale_ + 0.5f * h_));
 }
 
-sf::Vector2f Plot::to_pixel(Point p)
+sf::Vector2f Plot::to_pixel(Vec2 p)
 {
   return to_pixel(p.x_, p.y_);
 }
@@ -42,11 +42,11 @@ Plot::Plot(const Barrier& barrier1, const Barrier& barrier2, int w, int h)
                  sf::Color::Black);
 }
 
-void Plot::add(const std::vector<Point>& vertices)
+void Plot::add(const std::vector<Vec2>& vertices)
 {
   vertices_px.resize(vertices.size());
   std::transform(vertices.begin(), vertices.end(), vertices_px.begin(),
-                 [this](const Point& p) {
+                 [&](const Vec2& p) {
                    return sf::Vertex(to_pixel(p), sf::Color::Red);
                  });
 }

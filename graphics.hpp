@@ -26,14 +26,14 @@ class Plot
   template<typename FP1, typename FP2>
   sf::Vector2f to_pixel(FP1 x, FP2 y);
 
-  sf::Vector2f to_pixel(Point p);
+  sf::Vector2f to_pixel(Vec2 p);
 
  public:
   // creates barrier lines, plot scale is set from barrier dimensions
   Plot(const Barrier& barrier1, const Barrier& barrier2, int w = 600,
        int h = 400);
 
-  void add(const std::vector<Point>& vertices);
+  void add(const std::vector<Vec2>& vertices);
 
   void show();
 };
