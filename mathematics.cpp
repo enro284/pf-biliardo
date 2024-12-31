@@ -9,7 +9,7 @@ Pol::Pol(std::vector<double> coeff)
     : coeff_(coeff)
 {}
 
-double Pol::operator()(double x)
+double Pol::operator()(double x) const
 {
   int i{-1};
   return std::accumulate(coeff_.begin(), coeff_.end(), 0.,
@@ -19,7 +19,7 @@ double Pol::operator()(double x)
                          });
 }
 
-double Pol::der(double x)
+double Pol::der(double x) const
 {
   int i{0};
   return std::accumulate(coeff_.begin(), coeff_.end(), 0.,
@@ -121,10 +121,18 @@ Vec2 Vec2::ortho() const
   return {-y_, x_};
 }
 
+double Vec2::dist2(Vec2 const& v) const{
+  return dot(*this - v, *this - v);
+}
+
 Vec2 operator+(Vec2 const& lhs, Vec2 const& rhs)
 {
   return {lhs.x_ + rhs.x_, lhs.y_ + rhs.y_};
 }
+Vec2 operator-(Vec2 const& lhs, Vec2 const& rhs){
+  return {lhs.x_ - rhs.x_, lhs.y_ - rhs.y_};
+}
+
 
 Vec2 Vec2::operator*(double rhs) const
 {
