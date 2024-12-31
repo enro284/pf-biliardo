@@ -13,7 +13,7 @@ class Pol
 
   double operator()(double x) const;
   double der(double x) const; // TODO: test
-  int deg() const;
+  std::size_t deg() const;
   std::vector<double> coeff() const;
 
   Pol operator-();

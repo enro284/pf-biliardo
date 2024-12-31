@@ -29,9 +29,9 @@ double Pol::der(double x) const
                          });
 }
 
-int Pol::deg() const
+std::size_t Pol::deg() const
 {
-  return static_cast<int>(coeff_.size()) - 1;
+  return coeff_.size() - 1;
 }
 
 std::vector<double> Pol::coeff() const
@@ -51,7 +51,7 @@ std::vector<double> eq_solve(Pol const& pol1, Pol const& pol2)
 {
   std::vector<double> eq;
   std::vector<double> minus;
-  int eq_deg;
+  std::size_t eq_deg;
   if (pol2.deg() > pol1.deg()) {
     eq_deg = pol2.deg();
     eq     = pol2.coeff();
@@ -62,7 +62,7 @@ std::vector<double> eq_solve(Pol const& pol1, Pol const& pol2)
     minus  = pol2.coeff();
   }
 
-  minus.resize(eq_deg, 0.0);
+  minus.resize(eq_deg + 1, 0.0);
 
   std::transform(minus.begin(), minus.end(), eq.begin(), eq.begin(),
                  [](double m, double e) { return e - m; });
@@ -76,6 +76,7 @@ std::vector<double> eq_solve(Pol const& pol1, Pol const& pol2)
       break;
     }
     sol.push_back({-b / a});
+    break;
   }
   case 2: { // ax^2 + bx + c = 0
     double a = eq[2];
@@ -93,6 +94,7 @@ std::vector<double> eq_solve(Pol const& pol1, Pol const& pol2)
       sol.push_back((-b - sqrt_disc) / (2 * a));
       sol.push_back((-b + sqrt_disc) / (2 * a));
     }
+    break;
   }
   default:
     throw std::runtime_error(
@@ -121,7 +123,8 @@ Vec2 Vec2::ortho() const
   return {-y_, x_};
 }
 
-double Vec2::dist2(Vec2 const& v) const{
+double Vec2::dist2(Vec2 const& v) const
+{
   return dot(*this - v, *this - v);
 }
 
@@ -129,10 +132,10 @@ Vec2 operator+(Vec2 const& lhs, Vec2 const& rhs)
 {
   return {lhs.x_ + rhs.x_, lhs.y_ + rhs.y_};
 }
-Vec2 operator-(Vec2 const& lhs, Vec2 const& rhs){
+Vec2 operator-(Vec2 const& lhs, Vec2 const& rhs)
+{
   return {lhs.x_ - rhs.x_, lhs.y_ - rhs.y_};
 }
-
 
 Vec2 Vec2::operator*(double rhs) const
 {
