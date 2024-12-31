@@ -8,6 +8,7 @@
 Pol::Pol(std::vector<double> coeff)
     : coeff_(coeff)
 {}
+
 double Pol::operator()(double x)
 {
   int i{-1};
@@ -15,6 +16,16 @@ double Pol::operator()(double x)
                          [x, &i](double acc, double coeff) {
                            ++i;
                            return acc += coeff * std::pow(x, i);
+                         });
+}
+
+double Pol::der(double x)
+{
+  int i{0};
+  return std::accumulate(coeff_.begin(), coeff_.end(), 0.,
+                         [x, &i](double acc, double coeff) {
+                           ++i;
+                           return acc += coeff * i * std::pow(x, i - 1);
                          });
 }
 
