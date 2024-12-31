@@ -33,14 +33,15 @@ int main()
 
   double theta0{0};
   set_from_user_input(theta0, "initial angle (theta0) [rad]");
-  double m0{std::tan(theta0)};
 
   Barrier barrier_up{l, r1, r2};
   Barrier barrier_down{l, -r1, -r2};
 
-  std::vector<Point> bounces;
-  Result res = simulate_single_particle(barrier_up, barrier_down, Point{0, y0},
-                                        m0, bounces);
+  Trajectory traj{{0., y0}, theta0};
+
+  std::vector<Vec2> bounces;
+  Result res =
+      simulate_single_particle(barrier_up, barrier_down, traj, bounces);
 
   std::cout << "Simulation result (x, y, theta[rad]): " << res << '\n';
 
