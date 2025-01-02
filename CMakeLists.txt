@@ -6,8 +6,8 @@ include(CTest)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# richiedi l'uso di C++17, senza estensioni non-standard offerte dal compilatore usato 
-set(CMAKE_CXX_STANDARD 17)
+# richiedi l'uso di C++20, senza estensioni non-standard offerte dal compilatore usato 
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
