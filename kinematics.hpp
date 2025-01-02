@@ -66,14 +66,13 @@ struct Bounce
 };
 
 // return all possible bounces (going the right way and in barrier bounds)
-std::vector<Bounce> intersect(Trajectory const& t, Barrier const& b);
+std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b);
 
 Result simulate_single_particle(Barrier const& barrier_up,
                                 Barrier const& barrier_down, Trajectory t,
                                 std::vector<Vec2>& points);
-/* TODO
+
 Result simulate_single_particle(Barrier const& barrier_up,
-                                Barrier const& barrier_down, Vec2 p0, double
-m0);
-*/
+                                Barrier const& barrier_down, Trajectory t);
+
 #endif
