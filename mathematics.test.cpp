@@ -86,6 +86,15 @@ TEST_CASE("testing eq_solve")
     Pol tra{coeff_tra};
     CHECK(eq_solve(tra, bar).size() == 0);
   }
+
+  SUBCASE("Solve quadratic equation")
+  {
+    Pol p1({1.0, -3.0, 2.0});
+    Pol p2({0.0});
+    std::vector<double> roots = eq_solve(p1, p2);
+    CHECK(roots[0] == doctest::Approx(0.5));
+    CHECK(roots[1] == doctest::Approx(1.0));
+  }
 }
 
 TEST_CASE("testing Pol::operator-")
@@ -100,42 +109,50 @@ TEST_CASE("testing Pol::operator-")
   CHECK(inverse_pol.coeff()[1] == 1.);
 }
 
-TEST_CASE("Testing Vec2") {
-    Vec2 v1{3.0, 4.0};
-    Vec2 v2{1.0, 2.0};
+TEST_CASE("Testing Vec2")
+{
+  Vec2 v1{3.0, 4.0};
+  Vec2 v2{1.0, 2.0};
 
-    SUBCASE("Equality operator") {
-        Vec2 v3{3.0, 4.0};
-        CHECK(v1 == v3);
-        CHECK(!(v1 == v2));
-    }
+  SUBCASE("Equality operator")
+  {
+    Vec2 v3{3.0, 4.0};
+    CHECK(v1 == v3);
+    CHECK(!(v1 == v2));
+  }
 
-    SUBCASE("Scalar multiplication") {
-        Vec2 scaled = v1 * 2.0;
-        CHECK(scaled == Vec2{6.0, 8.0});
-    }
+  SUBCASE("Scalar multiplication")
+  {
+    Vec2 scaled = v1 * 2.0;
+    CHECK(scaled == Vec2{6.0, 8.0});
+  }
 
-    SUBCASE("Norm computation") {
-        CHECK(v1.norm() == doctest::Approx(5.0));
-    }
+  SUBCASE("Norm computation")
+  {
+    CHECK(v1.norm() == doctest::Approx(5.0));
+  }
 
-    SUBCASE("Orthogonal vector") {
-        Vec2 ortho = v1.ortho();
-        CHECK(dot(v1, ortho) == doctest::Approx(0.0));
-    }
+  SUBCASE("Orthogonal vector")
+  {
+    Vec2 ortho = v1.ortho();
+    CHECK(dot(v1, ortho) == doctest::Approx(0.0));
+  }
 
-    SUBCASE("Squared distance computation") {
-        CHECK(v1.dist2(v2) == doctest::Approx(8.0));
-    }
+  SUBCASE("Squared distance computation")
+  {
+    CHECK(v1.dist2(v2) == doctest::Approx(8.0));
+  }
 
-    SUBCASE("Vector addition and subtraction") {
-        Vec2 sum = v1 + v2;
-        Vec2 diff = v1 - v2;
-        CHECK(sum == Vec2{4.0, 6.0});
-        CHECK(diff == Vec2{2.0, 2.0});
-    }
+  SUBCASE("Vector addition and subtraction")
+  {
+    Vec2 sum  = v1 + v2;
+    Vec2 diff = v1 - v2;
+    CHECK(sum == Vec2{4.0, 6.0});
+    CHECK(diff == Vec2{2.0, 2.0});
+  }
 
-    SUBCASE("Dot product") {
-        CHECK(dot(v1, v2) == doctest::Approx(11.0));
-    }
+  SUBCASE("Dot product")
+  {
+    CHECK(dot(v1, v2) == doctest::Approx(11.0));
+  }
 }
