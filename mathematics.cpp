@@ -21,7 +21,7 @@ double Pol::operator()(double x) const
 
 double Pol::der(double x) const
 {
-  int i{0};
+  int i{-1};
   return std::accumulate(coeff_.begin(), coeff_.end(), 0.,
                          [x, &i](double acc, double coeff) {
                            ++i;
@@ -108,14 +108,14 @@ bool Vec2::operator==(Vec2 const& rhs) const
   return (this->x_ == rhs.x_ && this->y_ == rhs.y_);
 }
 
-double dot(Vec2 const& rhs, Vec2 const& lhs)
+double dot(Vec2 const& lhs, Vec2 const& rhs)
 {
-  return rhs.x_ * lhs.x_ + rhs.y_ + rhs.y_;
+  return lhs.x_ * rhs.x_ + lhs.y_ * rhs.y_;
 }
 
 double Vec2::norm() const
 {
-  return std::sqrt(x_ * x_ + y_ * y_);
+  return std::sqrt(dot(*this,*this));
 }
 
 Vec2 Vec2::ortho() const
