@@ -16,25 +16,24 @@ void set_from_user_input(T& var, std::string var_name)
 
 int main()
 {
-  double r1{1.};
-  std::cout << "Simulation of N particles. r1 cannot be modified and is set as: "  << r1 << '\n';
-  std::cout << "barriers: r1 = " << r1 << '\n';
-  double l{0.};
-  set_from_user_input(l, "length of barrier");
+  double r1{0.};
   double r2{0.};
-  set_from_user_input(r2, "height at end of barrier");
+  double l{0.};
+  set_from_user_input(r1, "height at beginning of the barrier (r1)");
+  set_from_user_input(r2, "height at end of the barrier (r2)");
+  set_from_user_input(l, "length of the barrier (l)");
 
   int N{0};
   set_from_user_input(N, "number of particles to simulate");
 
   std::cout << "Enter the parameters of the two gaussian distributions:\n";
   double mu_y{0.};
-  set_from_user_input(mu_y, "mu_y");
   double sigma_y{1.};
+  set_from_user_input(mu_y, "mu_y");
   set_from_user_input(sigma_y, "sigma_y");
   double mu_theta{0.};
-  set_from_user_input(mu_theta, "mu_theta");
   double sigma_theta{3.};
+  set_from_user_input(mu_theta, "mu_theta");
   set_from_user_input(sigma_theta, "sigma_theta");
 
   Barrier barrier_up{l, r1, r2};
@@ -53,9 +52,12 @@ int main()
     while (std::abs(y0) > r1) {
       y0 = y_dist(eng);
     }
-    double m0{std::tan(theta_dist(eng))};
-    Result res =
-        simulate_single_particle(barrier_up, barrier_down, Point{0, y0}, m0);
+
+    double theta0{theta_dist(eng)};
+
+    Trajectory traj{{0., y0}, theta0};
+    Result res = simulate_single_particle(barrier_up, barrier_down, traj);
+    
     if (res.get_x() != -1) {
       double yf     = res.get_y();
       double thetaf = res.get_theta();
