@@ -40,7 +40,7 @@ class Barrier
 
  public:
   // generic constructor
-  Barrier(Pol const& p, double x_max);
+  Barrier(Pol const& p = {{1, 0}}, double x_max = 1);
   // constructor for linear barrier
   Barrier(double l, double r1, double r2);
 
@@ -60,9 +60,6 @@ std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b);
 
 Result simulate_single_particle(Barrier const& barrier_up,
                                 Barrier const& barrier_down, Trajectory t,
-                                std::vector<Vec2>& points);
-
-Result simulate_single_particle(Barrier const& barrier_up,
-                                Barrier const& barrier_down, Trajectory t);
+                                std::vector<Vec2>* bounces = nullptr);
 
 #endif

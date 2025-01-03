@@ -12,7 +12,7 @@ class Pol
   Pol(std::vector<double> coeff);
 
   double operator()(double x) const;
-  double der(double x) const; // TODO: test
+  double der(double x) const;
   std::size_t deg() const;
   std::vector<double> coeff() const;
 
@@ -27,12 +27,19 @@ struct Vec2
   double y_;
 
   bool operator==(Vec2 const& rhs) const;
-  Vec2 operator*(double rhs) const; // TODO: make free func
+  Vec2& operator*=(double rhs);
+  Vec2& operator+=(Vec2 rhs);
+  Vec2& operator-=(Vec2 rhs);
+
   double norm() const;
   Vec2 ortho() const;
 
   double dist2(Vec2 const& v) const;
 };
+
+Vec2 operator*(double rhs, Vec2 const& lhs);
+Vec2 operator*(Vec2 const& rhs, double lhs);
+Vec2 operator/(Vec2 const& rhs, double lhs);
 
 Vec2 operator+(Vec2 const& lhs, Vec2 const& rhs);
 Vec2 operator-(Vec2 const& lhs, Vec2 const& rhs);

@@ -1,9 +1,8 @@
 #include "kinematics.hpp"
+#include "globals.hpp"
 #include <algorithm>
 #include <cassert>
 #include <cmath>
-
-double eps = 1e-10;
 
 Result::Result(Vec2 const& p, double theta)
     : p_{p}
@@ -83,55 +82,59 @@ Pol Barrier::pol() const
 
 std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b)
 {
-  if (t.v_.x_ < eps && t.v_.x_ > -eps) {
+  if (t.v_.x_ > -Globals::EPS && t.v_.x_ < Globals::EPS) {
     if (t.p_.y_ == b->pol()(t.p_.x_)) {
       return {};
     } else {
       return {{{t.p_.x_, b->pol()(t.p_.x_)}, b}};
     }
-  } else {
-    double t_m = t.v_.y_ / t.v_.x_;
-    Pol t_pol{{t.p_.y_ - t_m * t.p_.x_, t_m}};
-
-    std::vector<double> sol_x = eq_solve(t_pol, b->pol());
-
-    if (t.v_.x_ > 0) {
-      std::erase_if(
-          sol_x, [&](double x) { return x - t.p_.x_ <= eps || x > b->max(); });
-    } else if (t.v_.x_ < 0) {
-      std::erase_if(sol_x,
-                    [&](double x) { return x - t.p_.x_ >= -eps || x <= 0.; });
-    }
-    std::vector<Bounce> sol(sol_x.size(), Bounce{});
-    std::transform(sol_x.begin(), sol_x.end(), sol.begin(),
-                   [=](double x) { return Bounce{{x, t_pol(x)}, b}; });
-    return sol;
   }
+
+  double t_m = t.v_.y_ / t.v_.x_;
+  Pol t_pol{{t.p_.y_ - t_m * t.p_.x_, t_m}};
+
+  std::vector<double> sol_x = eq_solve(t_pol, b->pol());
+
+  if (t.v_.x_ > 0) {
+    std::erase_if(sol_x, [&](double x) {
+      return x - t.p_.x_ <= Globals::EPS || x > b->max();
+    });
+  } else if (t.v_.x_ < 0) {
+    std::erase_if(sol_x, [&](double x) {
+      return x - t.p_.x_ >= -Globals::EPS || x <= 0.;
+    });
+  }
+  std::vector<Bounce> sol(sol_x.size(), Bounce{});
+  std::transform(sol_x.begin(), sol_x.end(), sol.begin(),
+                 [&](double x) { return Bounce{{x, t_pol(x)}, b}; });
+  return sol;
 }
 
 Result simulate_single_particle(Barrier const& barrier_up,
                                 Barrier const& barrier_down, Trajectory t,
-                                std::vector<Vec2>& points)
+                                std::vector<Vec2>* bounces)
 {
   assert(std::abs(t.p_.y_) < barrier_up.pol()(0.));
 
-  std::vector<Bounce> bounces;
-  bounces.reserve(4); // TODO: n barriers * barrier order
+  std::vector<Bounce> collisions;
+  collisions.reserve(4); // TODO: n barriers * barrier order
 
-  for (int i{0}; i < 50; ++i) {
-    points.push_back(t.p_);
-    bounces.clear();
+  for (int i{0}; i < Globals::MAX_ITERATIONS; ++i) {
+    if (bounces)
+      bounces->push_back(t.p_);
+
+    collisions.clear();
 
     auto up_int   = intersect(t, &barrier_up);
     auto down_int = intersect(t, &barrier_down);
-    // TODO: make bounces global or pass them to avoid copying too many times
-    bounces.insert(bounces.end(), up_int.begin(), up_int.end());
-    bounces.insert(bounces.end(), down_int.begin(), down_int.end());
+    // TODO: make collisions global or pass them to avoid copying too many times
+    collisions.insert(collisions.end(), up_int.begin(), up_int.end());
+    collisions.insert(collisions.end(), down_int.begin(), down_int.end());
 
-    if (bounces.size() != 0) { /* choose bounce and update trajectory */
+    if (collisions.size() != 0) { /* choose bounce and update trajectory */
 
       Bounce bounce =
-          *std::min_element(bounces.begin(), bounces.end(),
+          *std::min_element(collisions.begin(), collisions.end(),
                             [&](Bounce const& lhs, Bounce const& rhs) {
                               return lhs.p_.dist2(t.p_) < rhs.p_.dist2(t.p_);
                             });
@@ -151,7 +154,9 @@ Result simulate_single_particle(Barrier const& barrier_up,
       } else {
         t.exit(0.);
       }
-      points.push_back(t.p_);
+      if (bounces)
+        bounces->push_back(t.p_);
+
       return t.result();
     }
   }

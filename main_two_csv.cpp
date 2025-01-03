@@ -57,8 +57,8 @@ int main()
 
     Trajectory traj{{0., y0}, theta0};
     Result res = simulate_single_particle(barrier_up, barrier_down, traj);
-    
-    if (res.get_x() != -1) {
+
+    if (res.get_x() == l) {
       double yf     = res.get_y();
       double thetaf = res.get_theta();
       csv_file << yf << ", " << thetaf << '\n';

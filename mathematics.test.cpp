@@ -19,6 +19,7 @@ TEST_CASE("testing pol")
     CHECK(pol(0.) == doctest::Approx(2.1));
     CHECK(pol(1.) == doctest::Approx(2.1));
     CHECK(pol(2.1) == doctest::Approx(2.1));
+    CHECK(pol.der(2.) == doctest::Approx(0));
   }
 
   coeff.push_back(1.5);
@@ -28,6 +29,8 @@ TEST_CASE("testing pol")
     CHECK(pol(0.) == doctest::Approx(2.1));
     CHECK(pol(1.) == doctest::Approx(3.6));
     CHECK(pol(2.1) == doctest::Approx(5.25));
+    CHECK(pol.der(2.) == doctest::Approx(1.5));
+
   }
 
   std::vector<double> coeff3{2.1, 0.7, 3.4};
@@ -37,6 +40,10 @@ TEST_CASE("testing pol")
     CHECK(pol(0.) == doctest::Approx(2.1));
     CHECK(pol(1.) == doctest::Approx(6.2));
     CHECK(pol(2.1) == doctest::Approx(18.564));
+
+    CHECK(pol.der(0.) == doctest::Approx(0.7));
+    CHECK(pol.der(1.) == doctest::Approx(7.5));
+    CHECK(pol.der(2.1) == doctest::Approx(14.98));
   }
 }
 

@@ -39,7 +39,8 @@ TEST_CASE("testing single particle simulation")
   {
     CHECK(simulate_single_particle(barrier_up, barrier_down,
                                    {{0., 0.}, -0.785398163})
-              .is_valid());
+              .get_x()
+          == 0);
   }
 }
 
@@ -53,8 +54,8 @@ TEST_CASE("testing single particle simulation with parallel barriers")
 
   SUBCASE("0 bounces")
   {
-    Result res =
-        simulate_single_particle(barrier_up, barrier_down, {{0., 0.}, 0.291456794});
+    Result res = simulate_single_particle(barrier_up, barrier_down,
+                                          {{0., 0.}, 0.291456794});
     CHECK(res.get_x() == doctest::Approx(4.));
     CHECK(res.get_y() == doctest::Approx(1.2));
     CHECK(res.get_theta() == doctest::Approx(0.291456794478));
@@ -62,8 +63,8 @@ TEST_CASE("testing single particle simulation with parallel barriers")
 
   SUBCASE("1 bounce")
   {
-    Result res =
-        simulate_single_particle(barrier_up, barrier_down, {{0., 0.}, 0.463647609});
+    Result res = simulate_single_particle(barrier_up, barrier_down,
+                                          {{0., 0.}, 0.463647609});
     CHECK(res.get_x() == doctest::Approx(4.));
     CHECK(res.get_y() == doctest::Approx(1.));
     CHECK(res.get_theta() == doctest::Approx(-0.463647609001));
@@ -80,8 +81,8 @@ TEST_CASE("testing single particle simulation with parallel barriers")
 
   SUBCASE("testing too many bounces")
   {
-    Result res =
-        simulate_single_particle(barrier_up, barrier_down, {{0., 0.}, 1.55829698});
+    Result res = simulate_single_particle(barrier_up, barrier_down,
+                                          {{0., 0.}, 1.55829698});
     CHECK(res.get_x() < 4);
   }
 }

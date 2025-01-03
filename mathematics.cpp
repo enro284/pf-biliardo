@@ -1,5 +1,7 @@
 #include "mathematics.hpp"
+#include "globals.hpp"
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <numeric>
 #include <stdexcept>
@@ -7,7 +9,9 @@
 
 Pol::Pol(std::vector<double> coeff)
     : coeff_(coeff)
-{}
+{
+  assert(coeff.size() > 0);
+}
 
 double Pol::operator()(double x) const
 {
@@ -21,12 +25,20 @@ double Pol::operator()(double x) const
 
 double Pol::der(double x) const
 {
-  int i{-1};
-  return std::accumulate(coeff_.begin(), coeff_.end(), 0.,
-                         [x, &i](double acc, double coeff) {
-                           ++i;
-                           return acc += coeff * i * std::pow(x, i - 1);
-                         });
+  double res{0};
+  int deg = static_cast<int>(coeff_.size()) - 1;
+  if (deg > 0) {
+    res += coeff_[1];
+  }
+  if (deg > 1) {
+    int i{1};
+    res = std::accumulate(coeff_.begin() + 2, coeff_.end(), res,
+                          [x, &i](double acc, double coeff) {
+                            ++i;
+                            return acc += coeff * i * std::pow(x, i - 1);
+                          });
+  }
+  return res;
 }
 
 std::size_t Pol::deg() const
@@ -68,11 +80,12 @@ std::vector<double> eq_solve(Pol const& pol1, Pol const& pol2)
                  [](double m, double e) { return e - m; });
 
   std::vector<double> sol;
+
   switch (eq_deg) {
   case 1: { // ax + b = 0
     double a = eq[1];
     double b = eq[0];
-    if (std::abs(a) < 1e-10) { // TODO: EPS
+    if (std::abs(a) < Globals::EPS) {
       break;
     }
     sol.push_back({-b / a});
@@ -83,11 +96,19 @@ std::vector<double> eq_solve(Pol const& pol1, Pol const& pol2)
     double b = eq[1];
     double c = eq[0];
 
+    if (std::abs(a) < Globals::EPS) { // bx + c=0
+      if (std::abs(b) < Globals::EPS) {
+        break;
+      }
+      sol.push_back({-c / b});
+      break;
+    }
+
     double discriminant = b * b - 4 * a * c;
 
     if (discriminant < 0) {
       break;
-    } else if (std::abs(discriminant) < 1e-10) {
+    } else if (std::abs(discriminant) < Globals::EPS) {
       sol.push_back({-b / (2 * a)});
     } else {
       double sqrt_disc = std::sqrt(discriminant);
@@ -103,9 +124,63 @@ std::vector<double> eq_solve(Pol const& pol1, Pol const& pol2)
   return sol;
 }
 
+Vec2& Vec2::operator*=(double rhs)
+{
+  x_ *= rhs;
+  y_ *= rhs;
+  return *this;
+}
+
+Vec2& Vec2::operator+=(Vec2 rhs)
+{
+  x_ += rhs.x_;
+  y_ += rhs.y_;
+  return *this;
+}
+
+Vec2& Vec2::operator-=(Vec2 rhs)
+{
+  x_ -= rhs.x_;
+  y_ -= rhs.y_;
+  return *this;
+}
+
+Vec2 operator*(double rhs, Vec2 const& lhs)
+{
+  Vec2 result{lhs};
+  result *= rhs;
+  return result;
+}
+Vec2 operator*(Vec2 const& rhs, double lhs)
+{
+  Vec2 result{rhs};
+  result *= lhs;
+  return result;
+}
+Vec2 operator/(Vec2 const& rhs, double lhs)
+{
+  Vec2 result{rhs};
+  result *= 1. / lhs;
+  return result;
+}
+
+Vec2 operator+(Vec2 const& lhs, Vec2 const& rhs)
+{
+  Vec2 result{lhs};
+  result += rhs;
+  return result;
+}
+Vec2 operator-(Vec2 const& lhs, Vec2 const& rhs)
+{
+  Vec2 result{lhs};
+  result -= rhs;
+  return result;
+}
+
 bool Vec2::operator==(Vec2 const& rhs) const
 {
-  return (this->x_ == rhs.x_ && this->y_ == rhs.y_);
+  return (std::abs(x_ - rhs.x_) < Globals::EPS
+          && std::abs(y_ - rhs.y_) < Globals::EPS);
 }
 
 double dot(Vec2 const& lhs, Vec2 const& rhs)
@@ -115,7 +190,7 @@ double dot(Vec2 const& lhs, Vec2 const& rhs)
 
 double Vec2::norm() const
 {
-  return std::sqrt(dot(*this,*this));
+  return std::sqrt(dot(*this, *this));
 }
 
 Vec2 Vec2::ortho() const
@@ -126,18 +201,4 @@ Vec2 Vec2::ortho() const
 double Vec2::dist2(Vec2 const& v) const
 {
   return dot(*this - v, *this - v);
-}
-
-Vec2 operator+(Vec2 const& lhs, Vec2 const& rhs)
-{
-  return {lhs.x_ + rhs.x_, lhs.y_ + rhs.y_};
-}
-Vec2 operator-(Vec2 const& lhs, Vec2 const& rhs)
-{
-  return {lhs.x_ - rhs.x_, lhs.y_ - rhs.y_};
-}
-
-Vec2 Vec2::operator*(double rhs) const
-{
-  return {x_ * rhs, y_ * rhs};
 }

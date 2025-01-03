@@ -18,8 +18,8 @@ void set_from_user_input(T& var, const std::string& var_name)
 
 int main()
 {
-  Barrier barrier_up{1, 0, 0}; // TODO: default
-  Barrier barrier_down{1, 0, 0};
+  Barrier barrier_up;
+  Barrier barrier_down;
 
   int deg{0};
   set_from_user_input(deg, "barrier equation degree [1,2]");
@@ -50,7 +50,7 @@ int main()
     set_from_user_input(l, "length of the barrier (l)");
 
     Pol p{{c, b, a}};
-    barrier_up = Barrier{p, l};
+    barrier_up   = Barrier{p, l};
     barrier_down = Barrier{-p, l};
     break;
   }
@@ -69,12 +69,13 @@ int main()
 
   std::vector<Vec2> bounces;
   Result res =
-      simulate_single_particle(barrier_up, barrier_down, traj, bounces);
+      simulate_single_particle(barrier_up, barrier_down, traj, &bounces);
 
   std::cout << "Simulation result (x, y, theta[rad]): " << res << '\n';
 
   Plot plot(barrier_up, barrier_down);
   plot.add(bounces);
+  std::cout << "Opening the plot in a new window, press \"q\" to quit\n";
   plot.show();
 
   return EXIT_SUCCESS;
