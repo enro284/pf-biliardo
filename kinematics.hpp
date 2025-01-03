@@ -5,14 +5,6 @@
 #include <iostream>
 #include <vector>
 
-struct Point
-{
-  double x_;
-  double y_;
-
-  bool operator==(Point const& rhs) const;
-};
-
 /*
 convention for results:
 x=-1: particle left from the left
@@ -21,13 +13,12 @@ x= l: particle left from the right
 */
 class Result
 {
-  Point p_;
+  Vec2 p_;
   double theta_;
 
  public:
-  // normal constructors
-  Result(double x, double y, double theta);
-  Result(Point const& p, double theta);
+  // see Trajectory.result() instead
+  Result(Vec2 const& p, double theta); // TODO: not in use
 
   // constructs invalid result (x = -1)
   Result();
@@ -44,34 +35,44 @@ std::ostream& operator<<(std::ostream& os, Result const& res);
 
 struct Trajectory
 {
-  Point p_;
-  double m_;
+  Vec2 p_;
+  Vec2 v_;
 
-  void exit(double x);
+  Trajectory(Vec2 const& p_, double theta);
+  void exit(double x); // check for x=0
+
   Result result() const;
 };
 
 class Barrier
 {
-  Point max_;
+  Vec2 max_;
   Pol pol_;
 
- public: // const!!!
-  Barrier(Pol p, double x_max);
+ public:
+  // generic constructor
+  Barrier(Pol const& p, double x_max);
+  // constructor for linear barrier
   Barrier(double l, double r1, double r2);
 
-  double max() const;
+  double max() const; // TODO: x_max
   Pol pol() const;
 };
 
-Point intersect(Trajectory t, Barrier b);
+struct Bounce
+{
+  Vec2 p_;
+  Barrier const* b_ptr; // TODO check pointer safety
+};
+
+// return all possible bounces (going the right way and in barrier bounds)
+std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b);
 
 Result simulate_single_particle(Barrier const& barrier_up,
-                                Barrier const& barrier_down, Point p0,
-                                double m0);
+                                Barrier const& barrier_down, Trajectory t,
+                                std::vector<Vec2>& points);
 
 Result simulate_single_particle(Barrier const& barrier_up,
-                                Barrier const& barrier_down, Point p0,
-                                double m0, std::vector<Point> &points);
+                                Barrier const& barrier_down, Trajectory t);
 
 #endif
