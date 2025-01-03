@@ -3,8 +3,6 @@
 
 #include "kinematics.hpp"
 #include <SFML/Graphics.hpp>
-#include <cassert>
-#include <cmath>
 
 class Plot
 {

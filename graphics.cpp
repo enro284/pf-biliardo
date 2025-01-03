@@ -1,5 +1,7 @@
 #include "graphics.hpp"
-#include "algorithm"
+#include <algorithm>
+#include <cassert>
+#include <cmath>
 
 template<typename FP1, typename FP2>
 sf::Vector2f Plot::to_pixel(FP1 x, FP2 y)

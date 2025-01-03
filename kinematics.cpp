@@ -10,10 +10,6 @@ Result::Result(Vec2 const& p, double theta)
     , theta_{theta}
 {}
 
-Result::Result()
-    : p_{-1., 0.}
-{}
-
 Result Trajectory::result() const
 {
   return Result(p_, std::atan(v_.y_ / v_.x_));
@@ -43,11 +39,6 @@ double Result::get_y() const
 double Result::get_theta() const
 {
   return theta_;
-}
-
-bool Result::is_valid() const
-{
-  return p_.x_ == -1.;
 }
 
 std::ostream& operator<<(std::ostream& os, Result const& res)
@@ -92,9 +83,8 @@ Pol Barrier::pol() const
 
 std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b)
 {
-  if (t.v_.x_ == 0) { // TODO: may need eps: y_ calculated from t
+  if (t.v_.x_ < eps && t.v_.x_ > -eps) {
     if (t.p_.y_ == b->pol()(t.p_.x_)) {
-      std::cout << "same sol\n";
       return {};
     } else {
       return {{{t.p_.x_, b->pol()(t.p_.x_)}, b}};
@@ -108,7 +98,6 @@ std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b)
     if (t.v_.x_ > 0) {
       std::erase_if(
           sol_x, [&](double x) { return x - t.p_.x_ <= eps || x > b->max(); });
-      // TODO capture type, equal?
     } else if (t.v_.x_ < 0) {
       std::erase_if(sol_x,
                     [&](double x) { return x - t.p_.x_ >= -eps || x <= 0.; });
@@ -123,14 +112,11 @@ std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b)
 Result simulate_single_particle(Barrier const& barrier_up,
                                 Barrier const& barrier_down, Trajectory t,
                                 std::vector<Vec2>& points)
-// t has to be a copy
 {
   assert(std::abs(t.p_.y_) < barrier_up.pol()(0.));
 
-  double l = barrier_up.max(); // TODO: necessary?
-
   std::vector<Bounce> bounces;
-  bounces.reserve(10); // TODO n barriers * barrier order
+  bounces.reserve(4); // TODO: n barriers * barrier order
 
   for (int i{0}; i < 50; ++i) {
     points.push_back(t.p_);
@@ -138,104 +124,35 @@ Result simulate_single_particle(Barrier const& barrier_up,
 
     auto up_int   = intersect(t, &barrier_up);
     auto down_int = intersect(t, &barrier_down);
+    // TODO: make bounces global or pass them to avoid copying too many times
     bounces.insert(bounces.end(), up_int.begin(), up_int.end());
     bounces.insert(bounces.end(), down_int.begin(), down_int.end());
 
     if (bounces.size() != 0) { /* choose bounce and update trajectory */
-      std::sort(bounces.begin(), bounces.end(),
-                [&](Bounce const& lhs, Bounce const& rhs) {
-                  return lhs.p_.dist2(t.p_) < rhs.p_.dist2(t.p_);
-                });
-      auto bounce = bounces[0];
-      std::cout << i << "\tbounce (x,y) " << bounce.p_.x_ << ", "
-                << bounce.p_.y_ << '\n';
-      std::cout << "\tup size: " << up_int.size()
-                << ", down size: " << down_int.size() << '\n';
 
-      for (auto pippo : bounces) {
-        std::cout << pippo.p_.x_ << " , " << pippo.p_.y_ << '\n';
-      }
+      Bounce bounce =
+          *std::min_element(bounces.begin(), bounces.end(),
+                            [&](Bounce const& lhs, Bounce const& rhs) {
+                              return lhs.p_.dist2(t.p_) < rhs.p_.dist2(t.p_);
+                            });
+
       t.p_ = bounce.p_;
 
       Vec2 tg = Vec2{1., bounce.b_ptr->pol().der(bounce.p_.x_)};
       tg      = tg * (1. / tg.norm());
-      std::cout << "  tg: " << tg.x_ << ", " << tg.y_ << '\n';
-      Vec2 n = tg.ortho();
-      std::cout << "  n: " << n.x_ << ", " << n.y_ << '\n';
+      Vec2 n  = tg.ortho();
 
       auto v_new = n * (-dot(t.v_, n)) + tg * dot(t.v_, tg);
       t.v_       = v_new;
 
-      std::cout << "  new v: " << t.v_.x_ << ", " << t.v_.y_ << '\n';
     } else { /* exit right or left */
       if (t.v_.x_ > 0) {
-        t.exit(l);
-        points.push_back(t.p_);
-        return t.result(); // TODO: change with break
-      } else if (t.v_.x_ < 0) {
+        t.exit(barrier_up.max());
+      } else {
         t.exit(0.);
-        points.push_back(t.p_);
-        return Result();
-      } // TODO: =0
-    }
-  }
-
-  return t.result();
-}
-
-Result simulate_single_particle(Barrier const& barrier_up,
-                                Barrier const& barrier_down, Trajectory t)
-// t has to be a copy
-{
-  assert(std::abs(t.p_.y_) < barrier_up.pol()(0.));
-
-  double l = barrier_up.max(); // TODO: necessary?
-
-  std::vector<Bounce> bounces;
-  bounces.reserve(10); // TODO n barriers * barrier order
-
-  for (int i{0}; i < 50; ++i) {
-    bounces.clear();
-
-    auto up_int   = intersect(t, &barrier_up);
-    auto down_int = intersect(t, &barrier_down);
-    bounces.insert(bounces.end(), up_int.begin(), up_int.end());
-    bounces.insert(bounces.end(), down_int.begin(), down_int.end());
-
-    if (bounces.size() != 0) { /* choose bounce and update trajectory */
-      std::sort(bounces.begin(), bounces.end(),
-                [&](Bounce const& lhs, Bounce const& rhs) {
-                  return lhs.p_.dist2(t.p_) < rhs.p_.dist2(t.p_);
-                });
-      auto bounce = bounces[0];
-      std::cout << i << "\tbounce (x,y) " << bounce.p_.x_ << ", "
-                << bounce.p_.y_ << '\n';
-      std::cout << "\tup size: " << up_int.size()
-                << ", down size: " << down_int.size() << '\n';
-
-      for (auto pippo : bounces) {
-        std::cout << pippo.p_.x_ << " , " << pippo.p_.y_ << '\n';
       }
-      t.p_ = bounce.p_;
-
-      Vec2 tg = Vec2{1., bounce.b_ptr->pol().der(bounce.p_.x_)};
-      tg      = tg * (1. / tg.norm());
-      std::cout << "  tg: " << tg.x_ << ", " << tg.y_ << '\n';
-      Vec2 n = tg.ortho();
-      std::cout << "  n: " << n.x_ << ", " << n.y_ << '\n';
-
-      auto v_new = n * (-dot(t.v_, n)) + tg * dot(t.v_, tg);
-      t.v_       = v_new;
-
-      std::cout << "  new v: " << t.v_.x_ << ", " << t.v_.y_ << '\n';
-    } else { /* exit right or left */
-      if (t.v_.x_ > 0) {
-        t.exit(l);
-        return t.result(); // TODO: change with break
-      } else if (t.v_.x_ < 0) {
-        t.exit(0.);
-        return Result();
-      } // TODO: =0
+      points.push_back(t.p_);
+      return t.result();
     }
   }
 

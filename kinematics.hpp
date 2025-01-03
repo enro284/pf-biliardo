@@ -5,12 +5,6 @@
 #include <iostream>
 #include <vector>
 
-/*
-convention for results:
-x=-1: particle left from the left
-x= l: particle left from the right
-0<=x<l: particle still bouncing, maybe resume simulation
-*/
 class Result
 {
   Vec2 p_;
@@ -18,18 +12,13 @@ class Result
 
  public:
   // see Trajectory.result() instead
-  Result(Vec2 const& p, double theta); // TODO: not in use
-
-  // constructs invalid result (x = -1)
-  Result();
+  Result(Vec2 const& p, double theta);
 
   bool operator==(Result b) const;
 
   double get_x() const;
   double get_y() const;
   double get_theta() const;
-
-  bool is_valid() const;
 };
 std::ostream& operator<<(std::ostream& os, Result const& res);
 
@@ -65,7 +54,8 @@ struct Bounce
   Barrier const* b_ptr; // TODO check pointer safety
 };
 
-// return all possible bounces (going the right way and in barrier bounds)
+// return all possible collisions (going the right way, in barrier bounds,
+// different from current trajectory point)
 std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b);
 
 Result simulate_single_particle(Barrier const& barrier_up,
