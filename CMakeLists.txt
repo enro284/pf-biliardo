@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(pf-biliardo VERSION 0.2.0)
 
+include_directories("src" "tests")
+
 # abilita il supporto per i test, tra cui l'opzione BUILD_TESTING usata sotto
 include(CTest)
 
@@ -24,25 +26,25 @@ string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined -fno-o
 
 find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
-add_executable(single_particle_sim main_one.cpp mathematics.cpp kinematics.cpp graphics.cpp)
-target_link_libraries(single_particle_sim PRIVATE sfml-graphics)
-add_executable(multiple_particle_sim main_two.cpp mathematics.cpp kinematics.cpp statistics.cpp)
-add_executable(multiple_particle_sim_csv main_two_csv.cpp mathematics.cpp kinematics.cpp statistics.cpp)
+add_executable(biliardo src/main_one.cpp src/mathematics.cpp src/kinematics.cpp src/graphics.cpp src/statistics.cpp)
+target_link_libraries(biliardo PRIVATE sfml-graphics)
+
+add_executable(multiple_particle_sim_csv src/main_csv.cpp src/mathematics.cpp src/kinematics.cpp src/statistics.cpp)
 
 # se il testing e' abilitato...
 #   per disabilitare il testing, passare -DBUILD_TESTING=OFF a cmake durante la fase di configurazione
 if (BUILD_TESTING)
 
   # aggiungi l'eseguibile mathematics.t
-  add_executable(mathematics.t mathematics.test.cpp mathematics.cpp)
+  add_executable(mathematics.t tests/mathematics.test.cpp src/mathematics.cpp)
   # aggiungi l'eseguibile mathematics.t alla lista dei test
   add_test(NAME mathematics.t COMMAND mathematics.t)
   # aggiungi l'eseguibile kinematics.t
-  add_executable(kinematics.t kinematics.test.cpp kinematics.cpp mathematics.cpp)
+  add_executable(kinematics.t tests/kinematics.test.cpp src/kinematics.cpp src/mathematics.cpp)
   # aggiungi l'eseguibile kinematics.t alla lista dei test
   add_test(NAME kinematics.t COMMAND kinematics.t)
   # aggiungi l'eseguibile statistics.t
-  add_executable(statistics.t statistics.test.cpp statistics.cpp)
+  add_executable(statistics.t tests/statistics.test.cpp src/statistics.cpp)
   # aggiungi l'eseguibile statistics.t alla lista dei test
   add_test(NAME statistics.t COMMAND statistics.t)
 
