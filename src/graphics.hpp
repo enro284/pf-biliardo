@@ -27,7 +27,6 @@ class Plot
 
  public:
   // creates barrier lines, plot scale is set from barrier dimensions
-  // WARNING: needs improvement before using asymmetric barriers
   Plot(const Barrier& barrier1, const Barrier& barrier2, int w = 600,
        int h = 400);
 

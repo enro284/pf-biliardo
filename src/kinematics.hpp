@@ -44,19 +44,19 @@ class Barrier
   // constructor for linear barrier
   Barrier(double l, double r1, double r2);
 
-  double max() const; // TODO: x_max
+  double max() const;
   Pol pol() const;
 };
 
-struct Bounce
+struct Collision
 {
   Vec2 p_;
-  Barrier const* b_ptr; // TODO check pointer safety
+  Barrier const* b_ptr;
 };
 
 // return all possible collisions (going the right way, in barrier bounds,
 // different from current trajectory point)
-std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b);
+std::vector<Collision> intersect(Trajectory const& t, Barrier const* b);
 
 Result simulate_single_particle(Barrier const& barrier_up,
                                 Barrier const& barrier_down, Trajectory t,

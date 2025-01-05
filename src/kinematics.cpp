@@ -11,7 +11,7 @@ Result::Result(Vec2 const& p, double theta)
 
 Result Trajectory::result() const
 {
-  return Result(p_, std::atan(v_.y_ / v_.x_));
+  return Result(p_, std::atan2(v_.y_, v_.x_));
 }
 
 void Trajectory::exit(double x)
@@ -80,9 +80,9 @@ Pol Barrier::pol() const
   return pol_;
 }
 
-std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b)
+std::vector<Collision> intersect(Trajectory const& t, Barrier const* b)
 {
-  if (t.v_.x_ > -Globals::EPS && t.v_.x_ < Globals::EPS) {
+  if (std::abs(t.v_.x_) < Globals::EPS) { /* handle vertical trajectory */
     if (t.p_.y_ == b->pol()(t.p_.x_)) {
       return {};
     } else {
@@ -95,6 +95,7 @@ std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b)
 
   std::vector<double> sol_x = eq_solve(t_pol, b->pol());
 
+  // filter solutions based on particle direction
   if (t.v_.x_ > 0) {
     std::erase_if(sol_x, [&](double x) {
       return x - t.p_.x_ <= Globals::EPS || x > b->max();
@@ -104,9 +105,9 @@ std::vector<Bounce> intersect(Trajectory const& t, Barrier const* b)
       return x - t.p_.x_ >= -Globals::EPS || x <= 0.;
     });
   }
-  std::vector<Bounce> sol(sol_x.size(), Bounce{});
+  std::vector<Collision> sol(sol_x.size(), Collision{});
   std::transform(sol_x.begin(), sol_x.end(), sol.begin(),
-                 [&](double x) { return Bounce{{x, t_pol(x)}, b}; });
+                 [&](double x) { return Collision{{x, t_pol(x)}, b}; });
   return sol;
 }
 
@@ -116,8 +117,8 @@ Result simulate_single_particle(Barrier const& barrier_up,
 {
   assert(std::abs(t.p_.y_) < barrier_up.pol()(0.));
 
-  std::vector<Bounce> collisions;
-  collisions.reserve(4); // TODO: n barriers * barrier order
+  std::vector<Collision> collisions;
+  collisions.reserve(4);
 
   for (int i{0}; i < Globals::MAX_ITERATIONS; ++i) {
     if (bounces)
@@ -127,15 +128,14 @@ Result simulate_single_particle(Barrier const& barrier_up,
 
     auto up_int   = intersect(t, &barrier_up);
     auto down_int = intersect(t, &barrier_down);
-    // TODO: make collisions global or pass them to avoid copying too many times
     collisions.insert(collisions.end(), up_int.begin(), up_int.end());
     collisions.insert(collisions.end(), down_int.begin(), down_int.end());
 
     if (collisions.size() != 0) { /* choose bounce and update trajectory */
 
-      Bounce bounce =
+      Collision bounce =
           *std::min_element(collisions.begin(), collisions.end(),
-                            [&](Bounce const& lhs, Bounce const& rhs) {
+                            [&](Collision const& lhs, Collision const& rhs) {
                               return lhs.p_.dist2(t.p_) < rhs.p_.dist2(t.p_);
                             });
 
